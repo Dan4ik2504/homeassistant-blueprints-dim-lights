@@ -265,9 +265,9 @@ variables:
         {%- if e in affected_entities -%}
           {%- if trigger_is_event and (not is_on or (is_on and last_changed.seconds < 2)) -%}
             {%- set data.entities = data.entities + [e] -%}
-          {%- elif can_dim and force_turn_on -%}
+          {%- elif force_turn_on -%}
             {%- set data.entities = data.entities + [e] -%}
-          {%- elif can_dim and is_on and current_brightness != brightness and (current_brightness - last_brightness)|abs <= allowance_value -%}
+          {%- elif is_on and current_brightness != brightness and (current_brightness - last_brightness)|abs <= allowance_value -%}
             {%- set data.entities = data.entities + [e] -%}
           {%- endif -%}
         {%- endif -%}

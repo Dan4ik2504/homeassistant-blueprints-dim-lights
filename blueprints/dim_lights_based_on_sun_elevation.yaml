@@ -274,10 +274,21 @@ variables:
       {%- endfor -%}
       {{ data.entities }}
   
-  can_dim: ->-
+  can_dim: >-
       {%- set data = namespace(entities=[]) -%}
       {%- for e in entity_list -%}
         {%- set data.entities = data.entities + [state_attr(e, 'supported_features')|bitwise_and(1)|bitwise_or(not is_on)] -%}
+      {%- endfor -%}
+      {{ data.entities }}
+  
+    dim_entities_debug: >-
+      {%- set data = namespace(entities=[]) -%}
+      {%- for e in entity_list -%}
+        {%- set current_brightness = state_attr(e, 'brightness') -%}
+        {%- set is_on = states(e) == 'on' -%}
+        {%- set last_changed = (now() - states[e].last_changed) -%}
+        {%- set can_dim = state_attr(e, 'supported_features')|bitwise_and(1)|bitwise_or(not is_on) -%}
+        {%- set data.entities = data.entities + [e in affected_entities, (trigger_is_event, (not is_on or (is_on and last_changed.seconds < 2))), (can_dim, force_turn_on), (can_dim, is_on, current_brightness, brightness, last_brightness, (current_brightness - last_brightness)|abs)] -%}
       {%- endfor -%}
       {{ data.entities }}
 

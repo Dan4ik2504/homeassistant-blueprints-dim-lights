@@ -273,6 +273,13 @@ variables:
         {%- endif -%}
       {%- endfor -%}
       {{ data.entities }}
+  
+  can_dim: ->-
+      {%- set data = namespace(entities=[]) -%}
+      {%- for e in entity_list -%}
+        {%- set data.entities = data.entities + [state_attr(e, 'supported_features')|bitwise_and(1)|bitwise_or(not is_on)] -%}
+      {%- endfor -%}
+      {{ data.entities }}
 
   turn_off_entities: >-
     {%- if force_turn_off -%}
@@ -343,6 +350,7 @@ action:
                   new brightness: {{ brightness }}\n
                   {% if last_elevation != \"\" -%}last brightness: {{ last_brightness }}\n{% endif %}
                   \n
+                  can_dim: {{ can_dim }} \n
                   current_states: {{ current_states }}\n
                   \n
                   force_turn_on: {{ force_turn_on }}\n

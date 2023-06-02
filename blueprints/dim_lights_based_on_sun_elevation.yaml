@@ -281,14 +281,14 @@ variables:
       {%- endfor -%}
       {{ data.entities }}
   
-    dim_entities_debug: >-
+  dim_entities_debug: >-
       {%- set data = namespace(entities=[]) -%}
       {%- for e in entity_list -%}
         {%- set current_brightness = state_attr(e, 'brightness') -%}
         {%- set is_on = states(e) == 'on' -%}
         {%- set last_changed = (now() - states[e].last_changed) -%}
         {%- set can_dim = state_attr(e, 'supported_features')|bitwise_and(1)|bitwise_or(not is_on) -%}
-        {%- set data.entities = data.entities + [e in affected_entities, current_brightness, is_on, last_changed, can_dim, trigger_is_event, last_changed.seconds, force_turn_on, brightness, last_brightness] -%}
+        {%- set data.entities = data.entities + [e in affected_entities, (trigger_is_event, (not is_on or (is_on and last_changed.seconds < 2))), (can_dim, force_turn_on), (can_dim, is_on, current_brightness, brightness, last_brightness)] -%}
       {%- endfor -%}
       {{ data.entities }}
 
@@ -362,6 +362,7 @@ action:
                   {% if last_elevation != \"\" -%}last brightness: {{ last_brightness }}\n{% endif %}
                   \n
                   can_dim: {{ can_dim }} \n
+                  dim_entities_debug: {{ dim_entities_debug }} \n
                   current_states: {{ current_states }}\n
                   \n
                   force_turn_on: {{ force_turn_on }}\n

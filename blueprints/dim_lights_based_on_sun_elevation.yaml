@@ -288,7 +288,7 @@ variables:
         {%- set is_on = states(e) == 'on' -%}
         {%- set last_changed = (now() - states[e].last_changed) -%}
         {%- set can_dim = state_attr(e, 'supported_features')|bitwise_and(1)|bitwise_or(not is_on) -%}
-        {%- set data.entities = data.entities + [e in affected_entities, (trigger_is_event, (not is_on or (is_on and last_changed.seconds < 2))), (can_dim, force_turn_on), (can_dim, is_on, current_brightness, brightness, last_brightness)] -%}
+        {%- set data.entities = data.entities + [e in affected_entities, current_brightness, is_on, last_changed, can_dim, trigger_is_event, last_changed.seconds, force_turn_on, brightness, last_brightness] -%}
       {%- endfor -%}
       {{ data.entities }}
 
